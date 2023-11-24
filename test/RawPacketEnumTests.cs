@@ -4,12 +4,7 @@ using static TASDPacketKey;
 
 [TestClass]
 public sealed class RawPacketEnumTests {
-	internal static readonly u8[] SampleFile = {
-		0x54, 0x41, 0x53, 0x44, 0x00, 0x01, 0x02,
-		0xFF, 0xFF, 0x01, 0x00,
-		0xFF, 0xFE, 0x01, 0x01, 0x01,
-		0xFF, 0x01, 0x01, 0x0D, 0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x2C, 0x20, 0x77, 0x6F, 0x72, 0x6C, 0x64, 0x21,
-	};
+	internal static readonly u8[] SampleFile = Data.GetRawFromEmbeddedResource("simpler.tasd");
 
 	private static TASDRawPacket SampleFileExPacket0(rwbbuf key)
 		=> new(key.WriteU16BE((u16) UNSPECIFIED), bbuf.Empty);
@@ -41,6 +36,48 @@ public sealed class RawPacketEnumTests {
 				_ = TASDRawPacketEnumeratorThrowing.Create(SampleFile.AsSpan(start: 1), out _);
 			}, "throwing enumerator succeeded unexpectedly on garbage input")
 		);
+	}
+
+	[DataRow(0, "simpler.tasd")]
+	[DataRow(1, "sample.tasd")]
+	[DataRow(2, "5256M.tasd")]
+	[DataRow(3, "4616M.tasd")]
+	[TestMethod]
+	public void TestOffsetParsing(int exDataIndex, string embedPathFragment) {
+		var ex = Data.Expected[exDataIndex];
+		var i = 0;
+		var packetStream = TASDRawPacketEnumeratorThrowing.Create(
+			Data.GetRawFromEmbeddedResource(embedPathFragment),
+			out var acHeader
+		);
+		Assert.AreEqual(sizeof(TASDPacketKey), acHeader.GlobalKeyLength);
+		foreach (var packet in packetStream) {
+			var acKey = (TASDPacketKey) packet.Key.ReadU16BE();
+			Assert.IsTrue(i < ex.Length, "file has extra packets?");
+			var (exKey, exPayloadLen) = ex[i];
+			Assert.AreEqual(exKey, acKey, $"packet #{i} failed to parse (key was {acKey}, expecting {exKey})");
+			var acPayloadLen = packet.Payload.Length;
+			Assert.AreEqual(exPayloadLen, acPayloadLen, $"packet #{i} failed to parse (payload was {acPayloadLen} octets long, expecting {exPayloadLen})");
+			i++;
+		}
+		Assert.AreEqual(ex.Length, i, $"packets #{i}..<#{ex.Length} failed to parse");
+	}
+
+	[DataRow("simpler.tasd", 0, 0)]
+	[DataRow("sample.tasd", 0, 1)]
+	[DataRow("5256M.tasd", 11558, 1)]
+	[DataRow("4616M.tasd", 66400, 1)]
+	[TestMethod]
+	public void TestOfKey(string embedPathFragment, s32 exInputPacketCount, s32 exRerecordPacketCount) {
+		_ = TASDRawPacketEnumeratorSafe.TryCreate(Data.GetRawFromEmbeddedResource(embedPathFragment), out _, out var iter);
+		var i = 0;
+		foreach (var _ in iter.OfKey(INPUT_CHUNK)) i++;
+		Assert.AreEqual(exInputPacketCount, i);
+
+		_ = TASDRawPacketEnumeratorSafe.TryCreate(Data.GetRawFromEmbeddedResource(embedPathFragment), out _, out iter);
+		i = 0;
+		foreach (var _ in iter.OfKey(RERECORDS)) i++;
+		Assert.AreEqual(exRerecordPacketCount, i);
 	}
 
 	[TestMethod]

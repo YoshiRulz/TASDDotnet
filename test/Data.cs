@@ -1,5 +1,8 @@
 namespace Net.TASBot.TASDDotnet;
 
+using System.IO;
+using System.Reflection;
+
 using static TASDPacketKey;
 
 internal static class Data {
@@ -10,6 +13,11 @@ internal static class Data {
 	private static readonly (TASDPacketKey Key, int PayloadLen) PRT = (PORT_CONTROLLER, sizeof(u8) + sizeof(u16));
 
 	public static readonly (TASDPacketKey Key, int PayloadLen)[][] Expected = {
+		/* simpler.tasd */ new[] {
+			(UNSPECIFIED, 0),
+			(EXPERIMENTAL, SIZEOF_BOOL),
+			(COMMENT, 13),
+		},
 		/* sample.tasd */ new[] {
 			(DUMP_CREATED, sizeof(s64)),
 			(CONSOLE_TYPE, sizeof(u8) + 10),
@@ -3048,4 +3056,14 @@ internal static class Data {
 			INP,INP,INP,INP,INP,INP,INP,INP,INP,INP,INP,INP,INP,INP,INP,INP,INP,INP,INP,INP,INP,INP,
 		},
 	};
+
+	private static readonly Assembly Asm = typeof(Data).Assembly;
+
+	public static u8[] GetRawFromEmbeddedResource(string embedPathFragment) {
+		using var stream = Asm.GetManifestResourceStream($"TASDDotnet.Tests.data.{embedPathFragment}")!;
+		var buf = new u8[(int) stream.Length];
+		using MemoryStream ms = new(buf);
+		stream.CopyTo(ms);
+		return buf;
+	}
 }

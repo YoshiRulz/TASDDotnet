@@ -20,6 +20,14 @@ internal static class Extensions {
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static u8 As01U8(this bool b)
+		=> unchecked(b ? (u8) 1 : (u8) 0);
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static bool BoolFrom01(this u8 b)
+		=> b is 1;
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static bool FastSequenceEqual(this bbuf left, bbuf right)
 		=> left == right || left.SequenceEqual(right);
 

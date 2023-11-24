@@ -161,6 +161,8 @@ public readonly ref struct TASDRawPacket {
 
 	internal const string ERR_MSG_TOO_SHORT_PKHDR = "missing key field, length-length field, or length field";
 
+	internal const u8 HARDCODED_G_KEYLEN = 2;
+
 	private const u64 MAX_PAYLOAD_LENGTH = int.MaxValue - TASDRawHeader.FIXED_LENGTH - 3U; //TODO check off-by-ones w.r.t. this
 
 #pragma warning disable CA2019 // doesn't allow default -_-
@@ -380,6 +382,34 @@ public readonly ref struct TASDRawPacket {
 /// <seealso cref="TASDRawHeader"/>
 /// <seealso cref="TASDRawPacket"/>
 public ref struct TASDRawPacketEnumeratorSafe {
+	public ref struct Filtered {
+		private readonly bbuf _key;
+
+		/// <remarks>cannot be <see langword="readonly"/> as that also prevents <see cref="MoveNext"/> from mutating it via instance method(s)</remarks>
+		private TASDRawPacketEnumeratorSafe _iter;
+
+		public readonly TASDRawPacket Current
+			=> _iter.Current;
+
+		internal Filtered(TASDRawPacketEnumeratorSafe iter, bbuf key) {
+			_iter = iter;
+			_key = key;
+		}
+
+		/// <inheritdoc cref="TASDRawPacketEnumeratorSafe.GetEnumerator"/>
+		public readonly Filtered GetEnumerator()
+			=> this;
+
+		public bool MoveNext() {
+			static bool FasterSequenceEqual(bbuf ex, bbuf ac)
+				=> ac[1] == ex[1] && ac[0] == ex[0];
+			while (true) {
+				if (!_iter.MoveNext()) return false;
+				if (FasterSequenceEqual(_key, _iter.Current.Key)) return true;
+			}
+		}
+	}
+
 	/// <remarks>TODO this documentation</remarks>
 	public static bool TryCreate(
 		bbuf fileBuf,
@@ -387,6 +417,9 @@ public ref struct TASDRawPacketEnumeratorSafe {
 		[MaybeNullWhen(false)] out TASDRawPacketEnumeratorSafe iter
 	) {
 		var headerParsed = TASDRawHeader.TryParse(fileBuf, out header);
+#if false
+		if (headerParsed.GlobalKeyLength is not TASDRawPacket.HARDCODED_G_KEYLEN) return false;
+#endif
 		iter = headerParsed ? new(fileBuf, header) : default;
 		return headerParsed;
 	}
@@ -410,13 +443,18 @@ public ref struct TASDRawPacketEnumeratorSafe {
 	}
 
 	/// <remarks>normally you'd have the collection implement this, but in this case there's already a <see cref="bbuf.GetEnumerator"/> for iterating octets...</remarks>
-	public TASDRawPacketEnumeratorSafe GetEnumerator()
+	public readonly TASDRawPacketEnumeratorSafe GetEnumerator()
 		=> this;
 
 	public bool MoveNext() {
 		if (!TASDRawPacket.TryParse(_fileBuf[_offset..], _header, out _current, out var endOffset)) return false;
 		_offset += endOffset;
 		return true;
+	}
+
+	public readonly Filtered OfKey(TASDPacketKey key) {
+		if (_header.GlobalKeyLength is not TASDRawPacket.HARDCODED_G_KEYLEN) throw new NotSupportedException("TODO write this message");
+		return new(this, new u8[TASDRawPacket.HARDCODED_G_KEYLEN].WriteU16BE(unchecked((u16) key))); //TODO don't (make bbuf.SequenceEquals(TASDPacketKey) and maybe .StartsWith extensions)
 	}
 }
 
@@ -427,9 +465,12 @@ public ref struct TASDRawPacketEnumeratorSafe {
 /// <seealso cref="TASDRawPacket"/>
 public ref struct TASDRawPacketEnumeratorThrowing {
 	/// <remarks>TODO this documentation</remarks>
-	public static TASDRawPacketEnumeratorThrowing Create(bbuf fileBuf, out TASDRawHeader header) {
-		header = TASDRawHeader.Parse(fileBuf);
-		return new(fileBuf, header);
+	public static TASDRawPacketEnumeratorThrowing Create(bbuf fileBuf, out TASDRawHeader headerParsed) {
+		headerParsed = TASDRawHeader.Parse(fileBuf);
+#if false
+		if (headerParsed.GlobalKeyLength is not TASDRawPacket.HARDCODED_G_KEYLEN) throw new ArgumentException(paramName: nameof(fileBuf), message: "TODO write this message");
+#endif
+		return new(fileBuf, headerParsed);
 	}
 
 	private readonly TASDRawHeader _header;
@@ -451,7 +492,7 @@ public ref struct TASDRawPacketEnumeratorThrowing {
 	}
 
 	/// <inheritdoc cref="TASDRawPacketEnumeratorSafe.GetEnumerator"/>
-	public TASDRawPacketEnumeratorThrowing GetEnumerator()
+	public readonly TASDRawPacketEnumeratorThrowing GetEnumerator()
 		=> this;
 
 	public bool MoveNext() {
