@@ -1,0 +1,55 @@
+<Project>
+	<PropertyGroup>
+		<AnalysisLevel>$([System.Environment]::Version.Major)</AnalysisLevel>
+		<AnalysisModeGlobalization>Recommended</AnalysisModeGlobalization>
+		<AnalysisModeMaintainability>Recommended</AnalysisModeMaintainability>
+		<AnalysisModePerformance>Recommended</AnalysisModePerformance>
+		<AnalysisModeReliability>Recommended</AnalysisModeReliability>
+		<AnalysisModeUsage>Recommended</AnalysisModeUsage>
+		<CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+		<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+		<DebugType>portable</DebugType>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+		<ErrorReport>prompt</ErrorReport>
+		<Features>strict</Features>
+		<ImplicitUsings>disable</ImplicitUsings><!-- tries to `global using System.Net.Http;` on net48, didn't work even w/ reference assemblies -->
+		<LangVersion>11.0</LangVersion>
+		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+		<NoWarn>$(NoWarn);CS8981</NoWarn><!-- CS8981: type name {,rw}bbuf may become keyword in the future -->
+		<Nullable>enable</Nullable>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+		<RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+		<SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
+	</PropertyGroup>
+	<PropertyGroup Condition=" $([System.Environment]::Version.Major) &lt; 8 ">
+		<LangVersion>preview</LangVersion><!-- can still compile with SDK >= 6.0.411 IMPORTANT: check this -->
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+		<DebugSymbols>true</DebugSymbols>
+		<DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
+		<Optimize>false</Optimize>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+		<DebugSymbols>false</DebugSymbols>
+		<DefineConstants>$(DefineConstants);TRACE</DefineConstants>
+		<Optimize>true</Optimize>
+		<PathMap>$(MSBuildProjectDirectory)=${$(MSBuildProjectName)}/</PathMap>
+	</PropertyGroup>
+	<ItemGroup>
+		<Using Include="System" />
+		<Using Include="System.ReadOnlySpan&lt;byte>" Alias="bbuf" />
+		<!-- Half isn't in netstandard2.0, maybe there's a polyfill, but CBB -->
+		<Using Include="System.Single" Alias="f32" />
+		<Using Include="System.Double" Alias="f64" />
+		<Using Include="System.Span&lt;byte>" Alias="rwbbuf" />
+		<Using Include="System.SByte" Alias="s8" />
+		<Using Include="System.Int16" Alias="s16" />
+		<Using Include="System.Int32" Alias="s32" />
+		<Using Include="System.Int64" Alias="s64" />
+		<Using Include="System.Byte" Alias="u8" />
+		<Using Include="System.UInt16" Alias="u16" />
+		<Using Include="System.UInt32" Alias="u32" />
+		<Using Include="System.UInt64" Alias="u64" />
+	</ItemGroup>
+</Project>

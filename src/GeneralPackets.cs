@@ -1,0 +1,1 @@
+namespace Net.TASBot.TASDDotnet;
