@@ -15,7 +15,7 @@
 		<Features>strict</Features>
 		<ImplicitUsings>disable</ImplicitUsings><!-- tries to `global using System.Net.Http;` on net48, didn't work even w/ reference assemblies -->
 		<IncludeSymbols>true</IncludeSymbols>
-		<LangVersion>11.0</LangVersion>
+		<LangVersion>12.0</LangVersion>
 		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
 		<NoWarn>$(NoWarn);CS8981</NoWarn><!-- CS8981: type name {,rw}bbuf may become keyword in the future -->
 		<Nullable>enable</Nullable>
@@ -23,9 +23,6 @@
 		<RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
 		<SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-	</PropertyGroup>
-	<PropertyGroup Condition=" $([System.Environment]::Version.Major) &lt; 8 ">
-		<LangVersion>preview</LangVersion><!-- can still compile with SDK >= 6.0.411 IMPORTANT: check this -->
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
 		<DebugSymbols>true</DebugSymbols>

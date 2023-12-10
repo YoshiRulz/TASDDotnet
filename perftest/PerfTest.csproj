@@ -3,12 +3,6 @@
 		<OutputType>Exe</OutputType>
 		<TargetFramework>net8.0</TargetFramework>
 	</PropertyGroup>
-	<PropertyGroup Condition=" $([System.Environment]::Version.Major) &lt; 8 ">
-		<TargetFramework>net6.0</TargetFramework>
-	</PropertyGroup>
-	<PropertyGroup Condition=" $([System.Environment]::Version.Major) &lt; 6 ">
-		<TargetFramework>net48</TargetFramework>
-	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="$(ProjectDir)../test/TASDDotnet.Tests.csproj" />
 	</ItemGroup>
