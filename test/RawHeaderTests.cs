@@ -9,8 +9,8 @@ public sealed class RawHeaderTests {
 	internal static void AssertEqual(
 		TASDRawHeader left,
 		TASDRawHeader right,
-		[CallerArgumentExpression(nameof(left))] string? leftExpr = null,
-		[CallerArgumentExpression(nameof(right))] string? rightExpr = null
+		[CallerArgumentExpression(nameof(left))] string? leftExpr = default,
+		[CallerArgumentExpression(nameof(right))] string? rightExpr = default
 	) => Assert.IsTrue(left == right, $"expected {leftExpr} == {rightExpr} to be true but it was false (they are unequal)");
 
 	internal static void AssertMessageContains(string ex, Exception? exc)
@@ -22,8 +22,8 @@ public sealed class RawHeaderTests {
 	private static void AssertNotEqual(
 		TASDRawHeader left,
 		TASDRawHeader right,
-		[CallerArgumentExpression(nameof(left))] string? leftExpr = null,
-		[CallerArgumentExpression(nameof(right))] string? rightExpr = null
+		[CallerArgumentExpression(nameof(left))] string? leftExpr = default,
+		[CallerArgumentExpression(nameof(right))] string? rightExpr = default
 	) => Assert.IsTrue(left != right, $"expected {leftExpr} != {rightExpr} to be true but it was false (they are equal)");
 
 	internal static void AssertSeqEqual(bbuf ex, bbuf ac, string message)

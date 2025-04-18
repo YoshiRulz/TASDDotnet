@@ -10,8 +10,8 @@ public sealed class RawPacketTests {
 	internal static void AssertEqual(
 		TASDRawPacket left,
 		TASDRawPacket right,
-		[CallerArgumentExpression(nameof(left))] string? leftExpr = null,
-		[CallerArgumentExpression(nameof(right))] string? rightExpr = null
+		[CallerArgumentExpression(nameof(left))] string? leftExpr = default,
+		[CallerArgumentExpression(nameof(right))] string? rightExpr = default
 	) {
 		Assert.IsTrue(left == right, $"expected {leftExpr} == {rightExpr} to be true but it was false (they are unequal)");
 		Assert.IsFalse(left != right, $"expected {leftExpr} != {rightExpr} to be false but it was true (they are unequal)");
@@ -20,8 +20,8 @@ public sealed class RawPacketTests {
 	private static void AssertNotEqual(
 		TASDRawPacket left,
 		TASDRawPacket right,
-		[CallerArgumentExpression(nameof(left))] string? leftExpr = null,
-		[CallerArgumentExpression(nameof(right))] string? rightExpr = null
+		[CallerArgumentExpression(nameof(left))] string? leftExpr = default,
+		[CallerArgumentExpression(nameof(right))] string? rightExpr = default
 	) {
 		Assert.IsTrue(left != right, $"expected {leftExpr} != {rightExpr} to be true but it was false (they are equal)");
 		Assert.IsFalse(left == right, $"expected {leftExpr} == {rightExpr} to be false but it was true (they are equal)");
@@ -34,8 +34,8 @@ public sealed class RawPacketTests {
 	private static void AssertEqualOrBothEmpty(
 		bbuf left,
 		bbuf right,
-		[CallerArgumentExpression(nameof(left))] string? leftExpr = null,
-		[CallerArgumentExpression(nameof(right))] string? rightExpr = null
+		[CallerArgumentExpression(nameof(left))] string? leftExpr = default,
+		[CallerArgumentExpression(nameof(right))] string? rightExpr = default
 	) => Assert.IsTrue(left == right || (left.Length is 0 && right.Length is 0), $"expected {leftExpr} == {rightExpr} to be true but it was false (they are unequal)");
 
 	private static Exception? CombinedParse(
