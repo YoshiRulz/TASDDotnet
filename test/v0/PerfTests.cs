@@ -14,8 +14,8 @@ public sealed class PerfTests {
 		var isB = 16;
 		while (iter1.MoveNext()) {
 			var rawInputs = iter1.Current.Payload[1];
-			for (var i = 7; i >= 0; i--) {
-				var offset = isB + 7 - i; // this seems like reversing and then reversing back, but it was ~400 ms faster (when running this whole thing 1000x, so really not a huge problem) //TODO you know what might be faster than both? doing this in whatever arbitrary order, and then reordering at the end
+			for (var i = 0; i < 8; i++) {
+				var offset = isB + i;
 				var isHeldN = (rawInputs >> i) & 1;
 				heldCounts[offset] += isHeldN;
 				var isHeld = isHeldN is 1;
@@ -23,8 +23,8 @@ public sealed class PerfTests {
 				wasHeld[offset] = isHeld;
 			}
 			rawInputs = iter1.Current.Payload[0];
-			for (var i = 7; i >= 0; i--) {
-				var offset = isB + 15 - i;
+			for (var i = 0; i < 8; i++) {
+				var offset = isB + 8 + i;
 				var isHeldN = (rawInputs >> i) & 1;
 				heldCounts[offset] += isHeldN;
 				var isHeld = isHeldN is 1;
@@ -33,6 +33,8 @@ public sealed class PerfTests {
 			}
 			isB = 16 - isB;
 		}
+		for (var i = 0; i < pressedCounts.Length; i += 8) pressedCounts[i..(i + 8)].Reverse();
+		for (var i = 0; i < heldCounts.Length; i += 8) heldCounts[i..(i + 8)].Reverse();
 	}
 
 	[TestMethod]
