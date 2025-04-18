@@ -76,10 +76,10 @@ public sealed class RawPacketEnumTests {
 		Assert.AreEqual(exRerecordPacketCount, i);
 	}
 
-	[Ignore("no such test data file")]
-	[TestMethod]
-	public void TestSafeEnumeration() {
-		Assert.IsTrue(TASDRawPacketEnumeratorSafe.TryCreate(SampleFile, out var header, out var iter));
+	private void TestEnumerationInner<T>(
+		T iter,
+		TASDRawHeader header
+	) where T: ITASDRawPacketEnumerator, allows ref struct {
 		RawHeaderTests.AssertEqual(header, TASDRawHeader.V1_Keys2o);
 
 		Assert.IsTrue(iter.MoveNext());
@@ -95,23 +95,17 @@ public sealed class RawPacketEnumTests {
 		Assert.IsFalse(iter.MoveNext());
 	}
 
-	/// <remarks>code duplication :( but you can't implement interfaces on </c>ref struct</c>s or anything</remarks>
+	[Ignore("no such test data file")]
+	[TestMethod]
+	public void TestSafeEnumeration() {
+		Assert.IsTrue(TASDRawPacketEnumeratorSafe.TryCreate(SampleFile, out var header, out var iter));
+		TestEnumerationInner(iter, header);
+	}
+
 	[Ignore("no such test data file")]
 	[TestMethod]
 	public void TestThrowingEnumeration() {
 		var iter = TASDRawPacketEnumeratorThrowing.Create(SampleFile, out var header);
-		RawHeaderTests.AssertEqual(header, TASDRawHeader.V1_Keys2o);
-
-		Assert.IsTrue(iter.MoveNext());
-		rwbbuf keyBuf = stackalloc u8[2];
-		RawPacketTests.AssertEqual(iter.Current, SampleFileExPacket0(keyBuf));
-
-		Assert.IsTrue(iter.MoveNext());
-		RawPacketTests.AssertEqual(iter.Current, SampleFileExPacket1(keyBuf, stackalloc u8[1]));
-
-		Assert.IsTrue(iter.MoveNext());
-		RawPacketTests.AssertEqual(iter.Current, SampleFileExPacket2(keyBuf));
-
-		Assert.IsFalse(iter.MoveNext());
+		TestEnumerationInner(iter, header);
 	}
 }

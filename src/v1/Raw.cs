@@ -7,6 +7,11 @@ using System.Text;
 
 using static bitops_polyfill::System.Numerics.BitOperations;
 
+public interface ITASDRawPacketEnumerator {
+	TASDRawPacket Current { get; }
+	bool MoveNext();
+}
+
 #pragma warning disable CS0660
 #pragma warning disable CS0661
 /// <seealso cref="TASDRawHeader.TryParse"/>
@@ -381,7 +386,7 @@ public readonly ref struct TASDRawPacket {
 /// <seealso cref="TASDRawPacketEnumeratorThrowing.Create"/>
 /// <seealso cref="TASDRawHeader"/>
 /// <seealso cref="TASDRawPacket"/>
-public ref struct TASDRawPacketEnumeratorSafe {
+public ref struct TASDRawPacketEnumeratorSafe: ITASDRawPacketEnumerator {
 	public ref struct Filtered {
 		private readonly bbuf _key;
 
@@ -463,7 +468,7 @@ public ref struct TASDRawPacketEnumeratorSafe {
 /// <seealso cref="TASDRawPacketEnumeratorSafe.TryCreate"/>
 /// <seealso cref="TASDRawHeader"/>
 /// <seealso cref="TASDRawPacket"/>
-public ref struct TASDRawPacketEnumeratorThrowing {
+public ref struct TASDRawPacketEnumeratorThrowing: ITASDRawPacketEnumerator {
 	/// <remarks>TODO this documentation</remarks>
 	public static TASDRawPacketEnumeratorThrowing Create(bbuf fileBuf, out TASDRawHeader headerParsed) {
 		headerParsed = TASDRawHeader.Parse(fileBuf);
