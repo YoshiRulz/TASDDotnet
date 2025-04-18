@@ -1,11 +1,9 @@
 <Project>
 	<ItemGroup>
 		<PackageVersion Include="coverlet.msbuild" Version="6.0.0" />
-		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
-		<PackageVersion Include="MSTest.TestAdapter" Version="2.2.9" />
-		<PackageVersion Include="MSTest.TestFramework" Version="2.2.9" />
-		<PackageVersion Include="Polyfill.NET" Version="1.0.12" /><!-- IMPORTANT: marked as Apache2, but the repo is private or deleted -->
+		<PackageVersion Include="MSTest" Version="3.8.3" />
+		<PackageVersion Include="PolySharp" Version="1.15.0" />
 		<PackageVersion Include="Shim.System.Numerics" Version="6.0.0" />
-		<PackageVersion Include="System.Memory" Version="4.5.5" />
+		<PackageVersion Include="System.Memory" Version="4.6.3" />
 	</ItemGroup>
 </Project>

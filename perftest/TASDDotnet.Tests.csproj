@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<NoWarn>$(NoWarn);CS7022</NoWarn> <!-- something about top-level statements idk -->
+		<OutputType>Exe</OutputType>
+		<PublishAot>true</PublishAot>
+		<TargetFramework>net10.0</TargetFramework>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="MSTest" PrivateAssets="all" />
+		<ProjectReference Include="$(ProjectDir)../src/TASDDotnet.csproj" />
+		<EmbeddedResource Include="data/**/*" />
+		<Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+	</ItemGroup>
+</Project>
