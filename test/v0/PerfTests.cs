@@ -1,4 +1,4 @@
-namespace Net.TASBot.TASDDotnet;
+namespace IO.TASD.V0;
 
 [TestClass]
 public sealed class PerfTests {

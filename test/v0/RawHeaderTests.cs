@@ -1,4 +1,4 @@
-namespace Net.TASBot.TASDDotnet;
+namespace IO.TASD.V0;
 
 using System.Net;
 using System.Runtime.CompilerServices;

@@ -1,4 +1,4 @@
-namespace Net.TASBot.TASDDotnet;
+namespace IO.TASD.V0;
 
 using System.IO;
 using System.Reflection;
@@ -3059,11 +3059,6 @@ internal static class Data {
 
 	private static readonly Assembly Asm = typeof(Data).Assembly;
 
-	public static u8[] GetRawFromEmbeddedResource(string embedPathFragment) {
-		using var stream = Asm.GetManifestResourceStream($"TASDDotnet.Tests.data.{embedPathFragment}")!;
-		var buf = new u8[(int) stream.Length];
-		using MemoryStream ms = new(buf);
-		stream.CopyTo(ms);
-		return buf;
-	}
+	public static u8[] GetRawFromEmbeddedResource(string embedPathFragment)
+		=> Asm.GetManifestResourceStream($"TASDDotnet.Tests.v0.data.{embedPathFragment}")!.CopyToArrayAndDispose();
 }

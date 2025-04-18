@@ -1,4 +1,4 @@
-namespace Net.TASBot.TASDDotnet;
+namespace IO.TASD;
 
 using static System.Buffers.Binary.BinaryPrimitives;
 using static System.Runtime.CompilerServices.MethodImplOptions;

@@ -13,7 +13,7 @@
 		<PackageReference Include="MSTest" PrivateAssets="all" />
 		<PackageReference Include="PolySharp" PrivateAssets="all" /><!-- for Index/Range -->
 		<ProjectReference Include="$(ProjectDir)../src/TASDDotnet.csproj" />
-		<EmbeddedResource Include="data/**/*" />
+		<EmbeddedResource Include="*/data/**/*" />
 		<Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
 	</ItemGroup>
 </Project>

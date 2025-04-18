@@ -1,4 +1,4 @@
-namespace Net.TASBot.TASDDotnet;
+namespace IO.TASD.V0;
 
 using u8List = System.Collections.Generic.IReadOnlyList<u8>;
 
