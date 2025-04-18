@@ -1,5 +1,6 @@
 namespace IO.TASD.V1;
 
+using System.Buffers;
 using System.Collections.Generic;
 
 using static TASDPacketKey;
@@ -91,6 +92,18 @@ public record class TASDFile(IReadOnlyList<ITASDPacket> AllPackets) {
 		List<ITASDPacket> packets = new();
 		foreach (var rawPacket in iter) packets.Add(Parse1(rawPacket));
 		return new(packets);
+	}
+
+	public static TASDFile ParseHeaderAndAllPackets(ReadOnlySequence<u8> fileSeq) {
+#if true
+		throw new NotImplementedException();
+#else
+		var iter = TASDRawPacketEnumeratorThrowing.Create(fileSeq, out var header);
+		if (header.GlobalKeyLength is not sizeof(TASDPacketKey)) throw new ArgumentException(paramName: nameof(fileBuf), message: $"G_KEYLEN in header was {header.GlobalKeyLength}, but this library only works with 2-octet packet keys");
+		List<ITASDPacket> packets = new();
+		foreach (var rawPacket in iter) packets.Add(Parse1(rawPacket));
+		return new(packets);
+#endif
 	}
 }
 
